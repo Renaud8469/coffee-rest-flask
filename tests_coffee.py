@@ -17,6 +17,10 @@ class CoffeeTestCase(unittest.TestCase):
         self.assertEqual(resp.headers['Location'], "http://localhost/orders/0")
         self.assertEqual(resp.status_code, 201)
 
+    def test_order_creation_fail(self):
+        resp =self.app.post('/orders/', data=json.dumps({"hello":"world"}), content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+
     def test_order_read(self):
         resp = self.app.get('/orders/0')
         resp_data = json.loads(resp.data.decode('utf-8'))

@@ -9,6 +9,12 @@ payments = {}
 def place_order():
     body = request.get_json()
     
+    # Verify user input
+    if not "drink" in body:
+        resp = Response(json.dumps({"status":400, "message": "Your order must contain a 'drink' choice"}))
+        resp.status_code = 400
+        return resp
+
     # Add new order to orders list
     new_order = {"drink": body["drink"], "cost": 1.50, "prepared": False}
     order_id = len(orders)
@@ -23,13 +29,26 @@ def place_order():
 
 @app.route('/orders/<int:order_id>', methods=['GET','PUT'])
 def order(order_id):
+    
+    # Verify order existence
+    if not order_id < len(orders):
+        resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
+        resp.status_code = 404
+        return resp
+
     order = orders[order_id]
+
     if request.method == 'PUT':
+        body = request.get_json()
+        if not "drink" in body:
+            resp = Response(json.dumps({"status":400, "message": "Your order must contain a 'drink' choice"}))
+            resp.status_code = 400
+            return resp
+
         # Check if order is modifiable
         if order['prepared']:
             code = 409
         else:
-            body = request.get_json()
             order["drink"] = body["drink"]
             code = 200
     else:
@@ -38,6 +57,7 @@ def order(order_id):
     resp = Response(json.dumps(order))
     resp.status_code = code
     return resp
+
 
 @app.route('/payment/orders/<int:order_id>', methods=['PUT'])
 def pay(order_id):
