@@ -3,7 +3,7 @@ import json
 
 app = Flask(__name__)
 orders = []
-
+payments = {}
 
 @app.route('/orders/', methods=['POST'])
 def place_order():
@@ -39,3 +39,13 @@ def order(order_id):
     resp.status_code = code
     return resp
 
+@app.route('/payment/orders/<int:order_id>', methods=['PUT'])
+def pay(order_id):
+    order = orders[order_id]
+    body = request.get_json()
+    payment = {"amount": body["amount"], "cost": order["cost"], "paid": body["amount"] >= order["cost"]}
+    payments[order_id] = payment
+    resp = Response(json.dumps(payment))
+    resp.status_code = 201
+    return resp
+    
