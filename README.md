@@ -5,5 +5,5 @@ It is healivy inspired by this article : [How to GET a cup of coffee](https://ww
 
 ## Code structure
 
-For now it is an extremely simple app entirely contained in `app.py`. The other file `req.py` is used for testing purposes. 
+For now it is an extremely simple app entirely contained in `coffee.py`. The other file `tests.py` is used for testing purposes. 
 
