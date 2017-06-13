@@ -1,0 +1,6 @@
+# Vim temporary files
+*~
+
+# Python cache
+__pycache__/
+
