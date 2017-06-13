@@ -40,6 +40,7 @@ class CoffeeTestCase(unittest.TestCase):
         self.assertDictEqual(resp_data, self.payment)
         self.assertEqual(resp.status_code, 201)
 
+
 if __name__ == '__main__':
     unittest.main()
 
