@@ -44,7 +44,7 @@ class CoffeeTestCase(unittest.TestCase):
         resp = self.app.get('/orders/')
         resp_data = json.loads(resp.data.decode('utf-8'))
         self.order["drink"] = "expresso"
-        self.assertSequenceEqual(resp_data, [self.order])
+        self.assertDictEqual(resp_data, { '0' : self.order })
         self.assertEqual(resp.status_code, 200)
 
     def test_payment_read(self):
@@ -52,6 +52,12 @@ class CoffeeTestCase(unittest.TestCase):
         resp_data = json.loads(resp.data.decode('utf-8'))
         self.assertDictEqual(resp_data, self.payment)
         self.assertEqual(resp.status_code, 200)
+
+    def test_removal_order(self):
+        resp = self.app.delete('/orders/0')
+        self.assertEqual(resp.status_code, 204)
+        resp_get = self.app.get('/orders/0')
+        self.assertEqual(resp_get.status_code, 404)
 
 
 

@@ -2,7 +2,7 @@ from flask import Flask, request, Response
 import json
 
 app = Flask(__name__)
-orders = []
+orders = {}
 payments = {}
 
 @app.route('/orders/', methods=['GET', 'POST'])
@@ -22,7 +22,7 @@ def list_orders():
         # Add new order to orders list
         new_order = {"drink": body["drink"], "cost": 1.50, "prepared": False}
         order_id = len(orders)
-        orders.append(new_order)
+        orders[order_id] = new_order
         
         # Generate response
         resp = Response(json.dumps(new_order))
@@ -31,16 +31,26 @@ def list_orders():
     return resp
 
 
-@app.route('/orders/<int:order_id>', methods=['GET','PUT'])
-def order(order_id):
+@app.route('/orders/<int:order_id>', methods=['GET','PUT', 'DELETE'])
+def order_operations(order_id):
     
     # Verify order existence
-    if not order_id < len(orders):
-        resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
-        resp.status_code = 404
+    if not order_id in orders:
+        if request.method == 'DELETE':
+            resp = Response('')
+            resp.status_code = 204
+        else:
+            resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
+            resp.status_code = 404
         return resp
 
     order = orders[order_id]
+
+    if request.method == 'DELETE':
+        del orders[order_id]
+        resp = Response('')
+        resp.status_code = 204
+        return resp
 
     if request.method == 'PUT':
         body = request.get_json()
@@ -66,7 +76,7 @@ def order(order_id):
 @app.route('/payment/orders/<int:order_id>', methods=['GET', 'PUT'])
 def payment(order_id):
     # Verify order existence
-    if not order_id < len(orders):
+    if not order_id in orders:
         resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
         resp.status_code = 404
         return resp
