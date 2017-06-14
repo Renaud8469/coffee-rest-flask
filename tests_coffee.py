@@ -40,6 +40,13 @@ class CoffeeTestCase(unittest.TestCase):
         self.assertDictEqual(resp_data, self.payment)
         self.assertEqual(resp.status_code, 201)
 
+    def test_queue_orders(self):
+        resp = self.app.get('/orders/')
+        resp_data = json.loads(resp.data.decode('utf-8'))
+        self.order["drink"] = "expresso"
+        self.assertSequenceEqual(resp_data, [self.order])
+        self.assertEqual(resp.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()
