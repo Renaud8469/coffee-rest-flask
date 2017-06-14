@@ -63,24 +63,33 @@ def order(order_id):
     return resp
 
 
-@app.route('/payment/orders/<int:order_id>', methods=['PUT'])
-def pay(order_id):
+@app.route('/payment/orders/<int:order_id>', methods=['GET', 'PUT'])
+def payment(order_id):
     # Verify order existence
     if not order_id < len(orders):
         resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
         resp.status_code = 404
         return resp
 
-    order = orders[order_id]
-    body = request.get_json()
-    if not "amount" in body:
-            resp = Response(json.dumps({"status":400, "message": "Your payment must contain an 'amount' field."}))
-            resp.status_code = 400
-            return resp
+    if request.method == 'GET':
+        if not order_id in payments:
+            resp = Response(json.dumps({"status":404, "message": "This order does not exist."}))
+            resp.status_code = 404
+        else:
+            payment = payments[order_id]
+            resp = Response(json.dumps(payment))
+            resp.status_code = 200
+    else:
+        order = orders[order_id]
+        body = request.get_json()
+        if not "amount" in body:
+                resp = Response(json.dumps({"status":400, "message": "Your payment must contain an 'amount' field."}))
+                resp.status_code = 400
+                return resp
 
-    payment = {"amount": body["amount"], "cost": order["cost"], "paid": body["amount"] >= order["cost"]}
-    payments[order_id] = payment
-    resp = Response(json.dumps(payment))
-    resp.status_code = 201
+        payment = {"amount": body["amount"], "cost": order["cost"], "paid": body["amount"] >= order["cost"]}
+        payments[order_id] = payment
+        resp = Response(json.dumps(payment))
+        resp.status_code = 201
     return resp
     

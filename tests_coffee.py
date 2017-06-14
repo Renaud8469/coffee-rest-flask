@@ -47,6 +47,13 @@ class CoffeeTestCase(unittest.TestCase):
         self.assertSequenceEqual(resp_data, [self.order])
         self.assertEqual(resp.status_code, 200)
 
+    def test_payment_read(self):
+        resp = self.app.get('/payment/orders/0')
+        resp_data = json.loads(resp.data.decode('utf-8'))
+        self.assertDictEqual(resp_data, self.payment)
+        self.assertEqual(resp.status_code, 200)
+
+
 
 if __name__ == '__main__':
     unittest.main()
